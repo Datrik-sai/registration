@@ -5,27 +5,69 @@ import Button from "@material-ui/core/Button";
 class MobileValidation extends Component {
     constructor(props) {
         super(props);
-        this.state = { otp: "" };
+        this.state = {
+           otp: "",
+           isResend: false,
+           resendedOtp:""
+       };
       }
   
 
   handleChange = (otp) => this.setState({ otp });
 
-   handleGet = () => {
-    alert("OTP sent to your registered Mobile number");
-    
+  handleReset = () => {
+    // alert("OTP sent to your registered Mobile number");
+    this.setState({isResend: true})
+    const url =
+        "http://rabbitnonprod-login.us-east-1.elasticbeanstalk.com/rabbit/user/sendotp/122445545";
+      fetch(url, {
+        method: "POST",
+        crossDomain: true,
+        headers: new Headers({
+          // allowOrigins:"*",
+          // allowCredentials:true,
+          // Accept: 'application/json',
+          "x-api-key": "3XU9oFBTVJ5CAkZtddhiU4WrINPiQRQ89n0ISQrj",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "*",
+          "Access-Control-Allow-Headers": "*",
+          "Content-Type": "application/json",
+        }),
+      })
+        .then((resp) => resp.json())
+        .then((result) => {
+          if (result) {
+            this.setState({ resendedOtp: result.mobileVerificationCode }, () => {
+              // this.props.handleNextScreen(false, result.mobileVerificationCode);
+            });
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
   };
 
    handleValidate = () => {
     alert("Thanks for Validating click ok to continue next");
     console.log(this.state, this.props)
-    if(this.state.otp === this.props.mobileOTP)
-      this.props.handleNextScreen(true);
-    else{
-      alert("Invalid OTP");
+    if(this.state.isResend){
+      if(this.state.otp === this.state.resendedOtp){
+        this.props.handleNextScreen(true);
+        this.setState({isResend:false})
+      }
+      else{
+        alert("Invalid OTP");
+      }
     }
-
+    else{
+      if(this.state.otp === this.props.mobileOTP)
+      this.props.handleNextScreen(true);
+      else{
+        alert("Invalid OTP");
+      }
+    }  
   };
+
   render() {
     return (
       <div style={{ textAlign: "center" }}>
@@ -48,9 +90,9 @@ class MobileValidation extends Component {
           size="small"
           variant="contained"
           color="secondary"
-          onClick={() => this.handleGet()}
+          onClick={() => this.handleReset()}
         >
-          Get OTP
+          Resend OTP
         </Button>
         <span style={{ padding: "20px" }} />
         <Button style={{backgroundColor:"#0a800099",color:"white" }}

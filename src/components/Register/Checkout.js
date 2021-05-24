@@ -71,35 +71,98 @@ export default function Checkout() {
   const [activeStep, setActiveStep] = React.useState(0);
   const steps = ["Registration", "OTP Validation", "Mentor Slot Booking"];
   const [mobileOTPValue, setMobileOTPValue] = useState("");
+  const [basicFormData, setbasicFormData]= useState({});
+  const [basicbookingData, setbasicBookingData] = useState({});
 
   function getStepContent(step) {
     switch (step) {
       case 0:
         return (
           <RegistrationForm
+            getFormData={(formData)=>getFormData(formData)}
             handleNextScreen={(value, otp) => handleNextScreen(value, otp)}
           />
         );
       case 1:
         return (
           <MobileValidation
-            handleNextScreen={(value) => handleNextScreen(value)}
+            handleNextScreen={(value, otp) => handleNextScreen(value, otp)}
             mobileOTP={mobileOTPValue}
           />
         );
       case 2:
-        return <MentorSlotBooking />;
+        return <MentorSlotBooking getBookingDetails={(bookingData)=>getBookingDetails(bookingData)} />;
       default:
         throw new Error("Unknown step");
     }
+  }
+
+  const getFormData = (formData)=> {
+    setbasicFormData(formData)
+  }
+
+  const getBookingDetails = (bookingData) => {
+    setbasicBookingData(bookingData)
   }
 
   const handleNextScreen = (value, mobileOTP) => {
     if (value) {
       setActiveStep(activeStep + 1);
       setMobileOTPValue(mobileOTP);
+      
     }
   };
+
+  const onConfirmSlotClick = () => {
+    console.log(basicFormData, basicbookingData)
+    debugger
+    const url =
+        "http://rabbitnonprod-login.us-east-1.elasticbeanstalk.com/rabbit/user/summerregistration";
+      fetch(url, {
+        method: "POST",
+        body: JSON.stringify({
+          "firstName":basicFormData.firstName,
+          "lastName":basicFormData.lastName,
+          "email":basicFormData.email,
+          "phone":basicFormData.phone,
+          "childList":basicFormData.childList,
+          "days":[basicbookingData.day],
+          "hours":[basicbookingData.time]
+          }),
+        crossDomain: true,
+        // headers: {
+        //  " x-api-key" : "3XU9oFBTVJ5CAkZtddhiU4WrINPiQRQ89n0ISQrj",
+        // }
+        headers: new Headers({
+          // allowOrigins:"*",
+          // allowCredentials:true,
+          // Accept: 'application/json',
+          "x-api-key": "3XU9oFBTVJ5CAkZtddhiU4WrINPiQRQ89n0ISQrj",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "*",
+          "Access-Control-Allow-Headers": "*",
+          "Content-Type": "application/json",
+        }),
+      })
+        .then((resp) => resp.json())
+        .then((data) => {
+          if (data) {
+            this.setState({ mobileOTP: data.mobileVerificationCode }, () => {
+              this.props.handleNextScreen(true, data.mobileVerificationCode, this.state.data);
+            });
+          }
+        })
+        // .then(function(data) {
+        //   if(data){
+        //     debugger
+        //   }
+        //   debugger
+        //   this.setState({mobileOTP:data.mobileVerificationCode})// need to reverify the response
+        // })
+        .catch(function (error) {
+          console.log(error);
+        });
+  }
 
   const handleBack = () => {
     setActiveStep(activeStep - 1);
@@ -171,7 +234,7 @@ export default function Checkout() {
                     <Button
                       variant="contained"
                       color="primary"
-                      onClick={handleNextScreen}
+                      onClick={()=>onConfirmSlotClick()}
                       className={classes.button}
                     >
                       Confirm Slot

@@ -10,8 +10,6 @@ import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import InputLabel from "@material-ui/core/InputLabel";
-import FormHelperText from "@material-ui/core/FormHelperText";
-import axios from "axios";
 
 class RegistrationForm extends Component {
   constructor(props) {
@@ -25,22 +23,14 @@ class RegistrationForm extends Component {
       firstName: "",
       lastName: "",
       email: "",
-      phoneNumber: "",
-      childList: [
-        {
-          childOnefirstName: "",
-          childOnelastName: "",
-          childOnegrade: "",
-        },
-        {
-          childSecondfirstName: "",
-          childSecondlastName: "",
-          childSecondgrade: "",
-        },
-      ],
-      // childOnefirstName: "",
-      // childOnelastName: "",
-      // childOnegrade:"",
+      phone: "",
+      childList: [],
+      childOnefirstName: "",
+      childOnelastName: "",
+      childOnegrade:"",
+      childSecondfirstName: "",
+      childSecondlastName: "",
+      childSecondgrade:"",
     },
     errors: {},
     checked: false,
@@ -48,27 +38,18 @@ class RegistrationForm extends Component {
   });
 
   handleChange = (e) => {
-    this.setState({
-      data: {
-        ...this.state.data,
-        [e.target.name]: e.target.value,
+      this.setState({
+        data: {
+          ...this.state.data,
+          [e.target.name]: e.target.value,
 
-      },
-      errors: {
-        ...this.state.errors,
-        [e.target.name]: "",
-      },
-      // childOnegrade:
-      //    e.target.value,
-    });
+        },
+        errors: {
+          ...this.state.errors,
+          [e.target.name]: "",
+        },
+      });
   };
-
-
-  
-
-  // addNewItem = (e) => {
-  //   this.setState({childList: [...this.state.data.childList,e.target.name,e.target.value ]});
-  // };
 
   validate = () => {
     const { data, mobileOTP } = this.state;
@@ -79,10 +60,10 @@ class RegistrationForm extends Component {
     if (data.lastName === "") errors.lastName = "Last Name can not be blank.";
     if (!isEmail(data.email)) errors.email = "Email must be valid.";
     if (data.email === "") errors.email = "Email can not be blank.";
-    if (data.phoneNumber === "")
-      errors.phoneNumber = "Phone number  can not be blank.";
-    if (!isMobilePhone(data.phoneNumber))
-      errors.phoneNumber = "Mobile Number must be valid.";
+    if (data.phone === "")
+      errors.phone= "Phone number  can not be blank.";
+    if (!isMobilePhone(data.phone))
+      errors.phone = "Mobile Number must be valid.";
     if (data.childOnefirstName === "")
       errors.childOnefirstName = "First Name can not be blank.";
     if (data.childOnelastName === "")
@@ -102,36 +83,11 @@ class RegistrationForm extends Component {
 
     if (Object.keys(errors).length === 0 && this.state.checked) {
       console.log(data);
-      // axios.post('https://51g6p2l2k0.execute-api.us-east-1.amazonaws.com/nonprod/rabbit/user/sendotp/7986299272',
-
-      // {method:"POST",
-
-      //   headers :{
-      //   'Content-Type': 'application/json',
-      //   'Access-Control-Allow-Origin': '*',
-      //   'Access-Control-Allow-Methods': '*',
-      //   'Access-Control-Allow-Headers': '*',
-      //   "x-api-key": "3XU9oFBTVJ5CAkZtddhiU4WrINPiQRQ89n0ISQrj"
-      // },mode: 'no-cors',
-      // crossDomain: true}
-      // )
-
-      // .then(response => {
-      //   // this.setState({ articleId: response.data.id })
-      // }
-      // );
-      // .catch(function(error) {
-      //   console.log(error);
-      // });
-      // https://cors-anywhere.herokuapp.com/{type_your_url_here}
       const url =
         "http://rabbitnonprod-login.us-east-1.elasticbeanstalk.com/rabbit/user/sendotp/122445545";
       fetch(url, {
         method: "POST",
         crossDomain: true,
-        // headers: {
-        //  " x-api-key" : "3XU9oFBTVJ5CAkZtddhiU4WrINPiQRQ89n0ISQrj",
-        // }
         headers: new Headers({
           // allowOrigins:"*",
           // allowCredentials:true,
@@ -144,24 +100,18 @@ class RegistrationForm extends Component {
         }),
       })
         .then((resp) => resp.json())
-        .then((data) => {
-          if (data) {
-            this.setState({ mobileOTP: data.mobileVerificationCode }, () => {
-              this.props.handleNextScreen(true, data.mobileVerificationCode);
+        .then((result) => {
+          if (result) {
+            this.setState({ mobileOTP: result.mobileVerificationCode }, () => {
+              console.log(data)
+              this.props.handleNextScreen(true, result.mobileVerificationCode);
             });
           }
         })
-        // .then(function(data) {
-        //   if(data){
-        //     debugger
-        //   }
-        //   debugger
-        //   this.setState({mobileOTP:data.mobileVerificationCode})// need to reverify the response
-        // })
         .catch(function (error) {
-          debugger;
           console.log(error);
         });
+        this.props.getFormData(data);
     } else {
       this.setState({ errors });
       this.props.handleNextScreen(false);
@@ -170,7 +120,14 @@ class RegistrationForm extends Component {
 
   handleChecked = (e) => {
     this.setState({ checked: e.target.checked });
+    if(this.state.data.childOnefirstName || this.state.data.childOnelastName || this.state.data.childOnegrade){
+      this.state.data.childList.push({"firstName" : this.state.data.childOnefirstName,"lastName": this.state.data.childOnelastName,"currentLevel": this.state.data.childOnegrade})
+    }
+    if(this.state.data.childSecondfirstName || this.state.data.childSecondlastName || this.state.data.childSecondgrade){
+      this.state.data.childList.push({"firstName" : this.state.data.childSecondfirstName,"lastName": this.state.data.childSecondlastName,"currentLevel":this.state.data.childSecondgrade})
+    }
   };
+
   render() {
     const { data, errors } = this.state;
     return (
@@ -225,15 +182,15 @@ class RegistrationForm extends Component {
             <TextField
               required
               id="mobileNumber"
-              value={data.phoneNumber}
-              invalid={errors.phoneNumber ? true : false}
-              name="phoneNumber"
+              value={data.phone}
+              invalid={errors.phone ? true : false}
+              name="phone"
               onChange={this.handleChange}
               label="Mobile Number"
               fullWidth
               autoComplete="family-name"
             />
-            <div style={{ color: "red" }}> {errors.phoneNumber}</div>
+            <div style={{ color: "red" }}> {errors.phone}</div>
           </Grid>
         </Grid>
         <br />
@@ -269,27 +226,17 @@ class RegistrationForm extends Component {
             <div style={{ color: "red" }}> {errors.childOnelastName}</div>
           </Grid>
           <Grid item xs={12} sm={4} sm={4}>
-            {/* <TextField
-              required
-              id="childOnegrade"
-              value={data.childOnegrade}
-              invalid={errors.childOnegrade ? true : false}
-              name="childOnegrade"
-              onChange={this.handleChange}
-              label="Grade"
-              fullWidth
-            /> */}
             <FormControl required>
               <InputLabel id="demo-simple-select-required-label">
                 Grade
               </InputLabel>
               <Select
                 style={{ paddingRight: "30px" }}
-                labelId="childOnegrade"
-                id="childOnegrade"
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
                 name="childOnegrade"
                 value={data.childOnegrade}
-                onChange={this.handleChange}
+                onChange={(e)=>this.handleChange(e)}
               >
                 <MenuItem value="">
                   <em>None</em>
@@ -342,10 +289,12 @@ class RegistrationForm extends Component {
               </InputLabel>
               <Select
                 style={{ paddingRight: "28px" }}
-                labelId="demo-simple-select-required-label"
-                id="demo-simple-select-required"
-                // value={Grade}
-                // onChange={handleChange}
+                labelId="childSecondgrade"
+                id="childSecondgrade"
+                name="childSecondgrade"
+                value={data.childSecondgrade}
+                onChange={this.handleChange}
+                // onBlur={(e)=>this.onBlur(e,"two")}
               >
                 <MenuItem value="">
                   <em>None</em>
