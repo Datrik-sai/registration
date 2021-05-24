@@ -5,10 +5,9 @@ import Button from "@material-ui/core/Button";
 class MobileValidation extends Component {
     constructor(props) {
         super(props);
-    
-        // this.state = this.getInitialState();
+        this.state = { otp: "" };
       }
-  state = { otp: "" };
+  
 
   handleChange = (otp) => this.setState({ otp });
 
@@ -19,7 +18,12 @@ class MobileValidation extends Component {
 
    handleValidate = () => {
     alert("Thanks for Validating click ok to continue next");
-    this.props.handleNextScreen(true);
+    console.log(this.state, this.props)
+    if(this.state.otp === this.props.mobileOTP)
+      this.props.handleNextScreen(true);
+    else{
+      alert("Invalid OTP");
+    }
 
   };
   render() {
@@ -63,3 +67,4 @@ class MobileValidation extends Component {
 }
 
 export default MobileValidation;
+

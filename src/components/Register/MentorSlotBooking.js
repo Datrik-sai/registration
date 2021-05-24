@@ -15,16 +15,15 @@ class MentorSlotBooking extends Component {
         return ( 
             <div>
                 Book the Slot
-                <br/><br/><br/><br/>
-                <Button style = {{textAlign:"center"}}
+                {/* <Button style = {{textAlign:"center"}}
           variant="contained"
           color="primary"
           onClick={() => this.handleConfirm()}
-          // className={classes.button}
+          className={classes.button}
         >
-          {/* {activeStep === steps.length - 1 ? "Confirm Slot" : "Next"} */}
+          {activeStep === steps.length - 1 ? "Confirm Slot" : "Next"}
           Confirm the Slot
-        </Button>
+        </Button> */}
             </div>
          );
     }

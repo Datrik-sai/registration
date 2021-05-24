@@ -11,6 +11,7 @@ import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormHelperText from "@material-ui/core/FormHelperText";
+import axios from "axios";
 
 class RegistrationForm extends Component {
   constructor(props) {
@@ -25,12 +26,25 @@ class RegistrationForm extends Component {
       lastName: "",
       email: "",
       phoneNumber: "",
-      childOnefirstName: "",
-      childOnelastName: "",
-      childOnegrade: "",
+      childList: [
+        {
+          childOnefirstName: "",
+          childOnelastName: "",
+          childOnegrade: "",
+        },
+        {
+          childSecondfirstName: "",
+          childSecondlastName: "",
+          childSecondgrade: "",
+        },
+      ],
+      // childOnefirstName: "",
+      // childOnelastName: "",
+      // childOnegrade:"",
     },
     errors: {},
     checked: false,
+    mobileOTP: "",
   });
 
   handleChange = (e) => {
@@ -38,16 +52,26 @@ class RegistrationForm extends Component {
       data: {
         ...this.state.data,
         [e.target.name]: e.target.value,
+
       },
       errors: {
         ...this.state.errors,
         [e.target.name]: "",
       },
+      // childOnegrade:
+      //    e.target.value,
     });
   };
 
+
+  
+
+  // addNewItem = (e) => {
+  //   this.setState({childList: [...this.state.data.childList,e.target.name,e.target.value ]});
+  // };
+
   validate = () => {
-    const { data } = this.state;
+    const { data, mobileOTP } = this.state;
     let errors = {};
 
     if (data.firstName === "")
@@ -72,48 +96,72 @@ class RegistrationForm extends Component {
   handleNext = () => {
     // e.preventDefault();
 
-    const { data } = this.state;
+    const { data, mobileOTP } = this.state;
 
     const errors = this.validate();
 
     if (Object.keys(errors).length === 0 && this.state.checked) {
       console.log(data);
+      // axios.post('https://51g6p2l2k0.execute-api.us-east-1.amazonaws.com/nonprod/rabbit/user/sendotp/7986299272',
 
-      // fetch("https://51g6p2l2k0.execute-api.us-east-1.amazonaws.com/nonprod/rabbit/user/sendotp/2222222222",
-      //   {
-      //     method: "POST",
-      //     headers: {
-      //       "x-api-key": "3XU9oFBTVJ5CAkZtddhiU4WrINPiQRQ89n0ISQrj",
-      //     },
-      //   }
+      // {method:"POST",
+
+      //   headers :{
+      //   'Content-Type': 'application/json',
+      //   'Access-Control-Allow-Origin': '*',
+      //   'Access-Control-Allow-Methods': '*',
+      //   'Access-Control-Allow-Headers': '*',
+      //   "x-api-key": "3XU9oFBTVJ5CAkZtddhiU4WrINPiQRQ89n0ISQrj"
+      // },mode: 'no-cors',
+      // crossDomain: true}
       // )
-      //   .then((res) => res.json())
-      //   .then(
-      //     (result) => {
-      //       debugger;
-      //       // this.setState({
-      //       //   isLoaded: true,
-      //       //   items: result.items,
-      //       // });
-      //     },
-      //     // Note: it's important to handle errors here
-      //     // instead of a catch() block so that we don't swallow
-      //     // exceptions from actual bugs in components.
-      //     (error) => {
-      //       debugger;
-      //       // this.setState({
-      //       //   isLoaded: true,
-      //       //   error,
-      //       // });
-      //     }
-      //   );
 
-        fetch(url, { method: "GET", withCredentials: true, headers: { "X-Auth-Token": "ef72570ff371408f9668e414353b7b2e", "Content-Type": "application/json" } }) .then(resp => resp.json()) .then(function(data) { console.log(data); }) .catch(function(error) { console.log(error); });
-
-      this.props.handleNextScreen(true);
-
-      //Call an api here
-      //Resetting the form
+      // .then(response => {
+      //   // this.setState({ articleId: response.data.id })
+      // }
+      // );
+      // .catch(function(error) {
+      //   console.log(error);
+      // });
+      // https://cors-anywhere.herokuapp.com/{type_your_url_here}
+      const url =
+        "http://rabbitnonprod-login.us-east-1.elasticbeanstalk.com/rabbit/user/sendotp/122445545";
+      fetch(url, {
+        method: "POST",
+        crossDomain: true,
+        // headers: {
+        //  " x-api-key" : "3XU9oFBTVJ5CAkZtddhiU4WrINPiQRQ89n0ISQrj",
+        // }
+        headers: new Headers({
+          // allowOrigins:"*",
+          // allowCredentials:true,
+          // Accept: 'application/json',
+          "x-api-key": "3XU9oFBTVJ5CAkZtddhiU4WrINPiQRQ89n0ISQrj",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "*",
+          "Access-Control-Allow-Headers": "*",
+          "Content-Type": "application/json",
+        }),
+      })
+        .then((resp) => resp.json())
+        .then((data) => {
+          if (data) {
+            this.setState({ mobileOTP: data.mobileVerificationCode }, () => {
+              this.props.handleNextScreen(true, data.mobileVerificationCode);
+            });
+          }
+        })
+        // .then(function(data) {
+        //   if(data){
+        //     debugger
+        //   }
+        //   debugger
+        //   this.setState({mobileOTP:data.mobileVerificationCode})// need to reverify the response
+        // })
+        .catch(function (error) {
+          debugger;
+          console.log(error);
+        });
     } else {
       this.setState({ errors });
       this.props.handleNextScreen(false);
@@ -231,31 +279,31 @@ class RegistrationForm extends Component {
               label="Grade"
               fullWidth
             /> */}
-            <FormControl>
+            <FormControl required>
               <InputLabel id="demo-simple-select-required-label">
                 Grade
               </InputLabel>
               <Select
-                style={{ paddingRight: "25px" }}
-                labelId="demo-simple-select-required-label"
-                id="demo-simple-select-required"
-                // value={age}
-                // onChange={handleChange}
+                style={{ paddingRight: "30px" }}
+                labelId="childOnegrade"
+                id="childOnegrade"
+                name="childOnegrade"
+                value={data.childOnegrade}
+                onChange={this.handleChange}
               >
                 <MenuItem value="">
                   <em>None</em>
                 </MenuItem>
-                <MenuItem value={10}>Pre-k</MenuItem>
-                <MenuItem value={20}>KG</MenuItem>
-                <MenuItem value={30}>Grade-1</MenuItem>
-                <MenuItem value={30}>Grade-2</MenuItem>
-                <MenuItem value={30}>Grade-4</MenuItem>
-                <MenuItem value={30}>Grade-5</MenuItem>
-                <MenuItem value={30}>Grade-6</MenuItem>
+                <MenuItem value="Pre-k">Pre-k</MenuItem>
+                <MenuItem value="KG">K-G</MenuItem>
+                <MenuItem value="Grade-1">Grade-1</MenuItem>
+                <MenuItem value="Grade-2">Grade-2</MenuItem>
+                <MenuItem value="Grade-3">Grade-3</MenuItem>
+                <MenuItem value="Grade-4">Grade-4</MenuItem>
+                <MenuItem value="Grade-5">Grade-5</MenuItem>
+                <MenuItem value="Grade-6">Grade-6</MenuItem>
               </Select>
-              {/* <FormHelperText>Required</FormHelperText> */}
             </FormControl>
-
             <div style={{ color: "red" }}> {errors.childOnegrade}</div>
           </Grid>
         </Grid>
@@ -267,30 +315,52 @@ class RegistrationForm extends Component {
         <Grid container spacing={3}>
           <Grid item xs={12} sm={4} sm={4}>
             <TextField
-              required
-              id="address1"
-              name="address1"
+              id="childSecondfirstName"
+              value={data.childSecondfirstName}
+              invalid={errors.childSecondfirstName ? true : false}
+              name="childSecondfirstName"
+              onChange={this.handleChange}
               label="First Name"
               fullWidth
             />
           </Grid>
           <Grid item xs={12} sm={4} sm={4}>
             <TextField
-              required
-              id="address1"
-              name="address1"
+              id="childSecondlastName"
+              value={data.childSecondlastName}
+              invalid={errors.childSecondlastName ? true : false}
+              name="childSecondlastName"
+              onChange={this.handleChange}
               label="Last Name"
               fullWidth
             />
           </Grid>
           <Grid item xs={12} sm={4} sm={4}>
-            <TextField
-              required
-              id="address1"
-              name="address1"
-              label="Grade"
-              fullWidth
-            />
+            <FormControl>
+              <InputLabel id="demo-simple-select-required-label">
+                Grade
+              </InputLabel>
+              <Select
+                style={{ paddingRight: "28px" }}
+                labelId="demo-simple-select-required-label"
+                id="demo-simple-select-required"
+                // value={Grade}
+                // onChange={handleChange}
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                <MenuItem value={"Pre-k"}>Pre-k</MenuItem>
+                <MenuItem value={"KG"}>K-G</MenuItem>
+                <MenuItem value={"Grade-1"}>Grade-1</MenuItem>
+                <MenuItem value={"Grade-2"}>Grade-2</MenuItem>
+                <MenuItem value={"Grade-3"}>Grade-3</MenuItem>
+                <MenuItem value={"Grade-4"}>Grade-4</MenuItem>
+                <MenuItem value={"Grade-5"}>Grade-5</MenuItem>
+                <MenuItem value={"Grade-6"}>Grade-6</MenuItem>
+              </Select>
+            </FormControl>
+            <div style={{ color: "red" }}> {errors.childSecondgrade}</div>
           </Grid>
         </Grid>
         <br />

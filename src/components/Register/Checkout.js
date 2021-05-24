@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import AppBar from "@material-ui/core/AppBar";
@@ -13,6 +13,7 @@ import Typography from "@material-ui/core/Typography";
 import RegistrationForm from "./registration";
 import MobileValidation from "./MobileValidation";
 import MentorSlotBooking from "./MentorSlotBooking";
+import logo from "../Images/RabbitBoard.PNG";
 // import Review from './Review';
 
 function Copyright() {
@@ -65,45 +66,38 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-// const steps = ['Registration', 'OTP Validation', 'Mentor Slot Booking'];
-
-// function getStepContent(step) {
-//   switch (step) {
-//     case 0:
-//       return <RegistrationForm  handleNextScreen={(value) => handleNextScreen(value)} />;
-//     case 1:
-//       return <MobileValidation />;
-//     case 2:
-//       return <MentorSlotBooking />;
-//     default:
-//       throw new Error('Unknown step');
-//   }
-// }
-
 export default function Checkout() {
   const classes = useStyles();
   const [activeStep, setActiveStep] = React.useState(0);
   const steps = ["Registration", "OTP Validation", "Mentor Slot Booking"];
+  const [mobileOTPValue, setMobileOTPValue] = useState("");
 
   function getStepContent(step) {
     switch (step) {
       case 0:
         return (
           <RegistrationForm
-            handleNextScreen={(value) => handleNextScreen(value)}
+            handleNextScreen={(value, otp) => handleNextScreen(value, otp)}
           />
         );
       case 1:
-        return <MobileValidation handleNextScreen={(value) => handleNextScreen(value)} />;
+        return (
+          <MobileValidation
+            handleNextScreen={(value) => handleNextScreen(value)}
+            mobileOTP={mobileOTPValue}
+          />
+        );
       case 2:
         return <MentorSlotBooking />;
       default:
         throw new Error("Unknown step");
     }
   }
-  const handleNextScreen = (value) => {
+
+  const handleNextScreen = (value, mobileOTP) => {
     if (value) {
       setActiveStep(activeStep + 1);
+      setMobileOTPValue(mobileOTP);
     }
   };
 
@@ -111,19 +105,43 @@ export default function Checkout() {
     setActiveStep(activeStep - 1);
   };
 
+  const myStyle = {
+    borderRadius: "50%",
+    maxWidth: "30%",
+    height: "auto",
+    display: "block",
+    marginLeft: "20px",
+  };
+
   return (
     <React.Fragment>
       <CssBaseline />
-      <AppBar position="absolute" color="default" className={classes.appBar}>
+      <AppBar
+        position="absolute"
+        color="default"
+        className={classes.appBar}
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, rgba(255,0,0,0), rgba(200,0,0,1))",
+        }}
+      >
         <Toolbar>
           <Typography variant="h6" color="inherit" noWrap>
-            Rabbit Board
+            <img src={logo} alt="Logo" style={myStyle} />
+            <Link color="inherit" href="/">
+              Rabbit Board
+            </Link>
           </Typography>
         </Toolbar>
       </AppBar>
       <main className={classes.layout}>
         <Paper className={classes.paper}>
-          <Typography component="h1" variant="h4" align="center"style = {{fontSize:"22px"}}>
+          <Typography
+            component="h1"
+            variant="h4"
+            align="center"
+            style={{ fontSize: "22px" }}
+          >
             RabbitBoard Free Summer Classes
           </Typography>
           <Stepper activeStep={activeStep} className={classes.stepper}>
@@ -139,10 +157,6 @@ export default function Checkout() {
                 <Typography variant="h5" gutterBottom>
                   Thank you we have Registerd your Information successfully
                 </Typography>
-                {/* <Typography variant="subtitle1">
-                  Your order number is #2001539. We have emailed your order confirmation, and will
-                  send you an update when your order has shipped.
-                </Typography> */}
               </React.Fragment>
             ) : (
               <React.Fragment>
@@ -153,14 +167,17 @@ export default function Checkout() {
                       Back
                     </Button>
                   )}
-                  {/* <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleNextScreen}
-                    className={classes.button}
-                  >
-                    {activeStep === steps.length - 1 ? "Confirm Slot" : "Next"}
-                  </Button> */}
+                  {activeStep == 2 ? (
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={handleNextScreen}
+                      className={classes.button}
+                    >
+                      Confirm Slot
+                      {/* {activeStep === steps.length - 1 ? "Confirm Slot" : "Next"} */}
+                    </Button>
+                  ) : null}
                 </div>
               </React.Fragment>
             )}

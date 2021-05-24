@@ -1,10 +1,5 @@
 import React from 'react';
 import { Container, Row, Col } from 'reactstrap';
-
-import Header from './components/shared/Header/header.component';
-import Footer from './components/shared/Footer/footer.component';
-import Register from './components/Register/register.component';
-import RegistrationForm from './components/Register/registration';
 import Checkout from "./components/Register/Checkout";
 
 function App() {
