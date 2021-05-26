@@ -32,7 +32,7 @@ class MobileValidation extends Component {
           "Access-Control-Allow-Methods": "*",
           "Access-Control-Allow-Headers": "*",
           "Content-Type": "application/json",
-        }),
+        }), 
       })
         .then((resp) => resp.json())
         .then((result) => {

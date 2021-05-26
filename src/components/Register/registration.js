@@ -106,6 +106,7 @@ class RegistrationForm extends Component {
               console.log(data)
               this.props.handleNextScreen(true, result.mobileVerificationCode);
             });
+           
           }
         })
         .catch(function (error) {
@@ -241,14 +242,14 @@ class RegistrationForm extends Component {
                 <MenuItem value="">
                   <em>None</em>
                 </MenuItem>
-                <MenuItem value="Pre-k">Pre-k</MenuItem>
-                <MenuItem value="KG">K-G</MenuItem>
-                <MenuItem value="Grade-1">Grade-1</MenuItem>
-                <MenuItem value="Grade-2">Grade-2</MenuItem>
-                <MenuItem value="Grade-3">Grade-3</MenuItem>
-                <MenuItem value="Grade-4">Grade-4</MenuItem>
-                <MenuItem value="Grade-5">Grade-5</MenuItem>
-                <MenuItem value="Grade-6">Grade-6</MenuItem>
+                <MenuItem value="P">Pre-K</MenuItem>
+                <MenuItem value="K">Kinder-Garten</MenuItem>
+                <MenuItem value="1">First-Grade</MenuItem>
+                <MenuItem value="2">Second-Grade</MenuItem>
+                <MenuItem value="3">Third-Grade</MenuItem>
+                <MenuItem value="4">Fourth-Grade</MenuItem>
+                <MenuItem value="5">Fifth-Grade</MenuItem>
+                <MenuItem value="6">Sixth-Grade</MenuItem>
               </Select>
             </FormControl>
             <div style={{ color: "red" }}> {errors.childOnegrade}</div>
@@ -299,14 +300,14 @@ class RegistrationForm extends Component {
                 <MenuItem value="">
                   <em>None</em>
                 </MenuItem>
-                <MenuItem value={"Pre-k"}>Pre-k</MenuItem>
-                <MenuItem value={"KG"}>K-G</MenuItem>
-                <MenuItem value={"Grade-1"}>Grade-1</MenuItem>
-                <MenuItem value={"Grade-2"}>Grade-2</MenuItem>
-                <MenuItem value={"Grade-3"}>Grade-3</MenuItem>
-                <MenuItem value={"Grade-4"}>Grade-4</MenuItem>
-                <MenuItem value={"Grade-5"}>Grade-5</MenuItem>
-                <MenuItem value={"Grade-6"}>Grade-6</MenuItem>
+                <MenuItem value="P">Pre-K</MenuItem>
+                <MenuItem value="K">Kinder-Garten</MenuItem>
+                <MenuItem value="1">First-Grade</MenuItem>
+                <MenuItem value="2">Second-Grade</MenuItem>
+                <MenuItem value="3">Third-Grade</MenuItem>
+                <MenuItem value="4">Fourth-Grade</MenuItem>
+                <MenuItem value="5">Fifth-Grade</MenuItem>
+                <MenuItem value="6">Sixth-Grade</MenuItem>
               </Select>
             </FormControl>
             <div style={{ color: "red" }}> {errors.childSecondgrade}</div>

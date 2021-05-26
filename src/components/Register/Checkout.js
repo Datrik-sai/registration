@@ -105,10 +105,15 @@ export default function Checkout() {
     setbasicBookingData(bookingData)
   }
 
+  const handleStatus = () => {
+    console.log("clicked")
+  }
+
   const handleNextScreen = (value, mobileOTP) => {
     if (value) {
       setActiveStep(activeStep + 1);
       setMobileOTPValue(mobileOTP);
+     
       
     }
   };
@@ -193,6 +198,11 @@ export default function Checkout() {
             <img src={logo} alt="Logo" style={myStyle} />
             <Link color="inherit" href="/">
               Rabbit Board
+            </Link>
+          </Typography>
+          <Typography variant="h6" color="inherit" noWrap style={{marginLeft:"500px"}}>
+            <Link color="inherit" onClick={handleStatus}>
+              Already Registered? click here to check your Status
             </Link>
           </Typography>
         </Toolbar>
